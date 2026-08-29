@@ -1,33 +1,33 @@
 use alloc::string::String;
 use lazy_static::lazy_static;
 use spin::Mutex;
-use crate::{print, println};
+use crate::{print, println, vga_buffer::WRITER};
 
 lazy_static! {
     static ref INPUT_BUFFER: Mutex<String> = Mutex::new(String::new());
 }
 
-pub fn handle_byte(byte: u8) {
-    match byte {
-        b'\r' | b'\n' => {
+pub fn handle_char(character: char) {
+    match character {
+        '\n' => {
             let mut buffer = INPUT_BUFFER.lock();
             println!();
             execute_command(&buffer);
             buffer.clear();
             print!("NeriOS> ");
         }
-        0x7f | 0x08 => {
-            // backspace/delete
+        '\u{8}' => {
+            // backspace
             let mut buffer = INPUT_BUFFER.lock();
-            buffer.pop();
-            print!("\u{8} \u{8}");
+            if buffer.pop().is_some() {
+                print!("{}", 0x08 as char);
+            }
         }
-        c if c.is_ascii_graphic() || c == b' ' => {
+        c => {
             let mut buffer = INPUT_BUFFER.lock();
-            buffer.push(c as char);
-            print!("{}", c as char);
+            buffer.push(c);
+            print!("{}", c);
         }
-        _ => {}
     }
 }
 
@@ -37,11 +37,15 @@ fn execute_command(cmd: &str) {
             println!("Comandos disponibles:");
             println!("  help  - muestra esta ayuda");
             println!("  about - informacion de NeriOS");
+            println!("  clear - limpia la pantalla");
         }
         "about" => {
             println!("NeriOS - Mini sistema operativo bare-metal");
             println!("Desarrollado por NeriSoft Dev (Ing. Eduardo Neri)");
             println!("Escrito en Rust para x86_64");
+        }
+        "clear" => {
+            WRITER.lock().clear_screen();
         }
         "" => {}
         other => {

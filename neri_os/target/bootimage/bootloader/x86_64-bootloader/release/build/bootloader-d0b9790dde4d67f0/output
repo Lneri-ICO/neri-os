@@ -1,0 +1,7 @@
+cargo:rerun-if-changed=/workspaces/neri-os/neri_os/Cargo.toml
+cargo:rustc-link-search=native=/workspaces/neri-os/neri_os/target/bootimage/bootloader/x86_64-bootloader/release/build/bootloader-d0b9790dde4d67f0/out
+cargo:rustc-link-lib=static=kernel_bin-neri_os
+cargo:rerun-if-env-changed=KERNEL
+cargo:rerun-if-env-changed=KERNEL_MANIFEST
+cargo:rerun-if-changed=/workspaces/neri-os/neri_os/target/x86_64-neri_os/debug/neri_os
+cargo:rerun-if-changed=build.rs

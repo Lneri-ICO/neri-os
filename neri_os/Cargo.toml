@@ -8,11 +8,12 @@ bootloader = { version = "=0.9.23", features = ["map_physical_memory"] }
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 x86_64 = "=0.14.10"
 spin = "0.5.2"
-uart_16550 = "=0.2.18"
+volatile = "0.2.6"
 pic8259 = "=0.10.1"
+pc-keyboard = "0.7.0"
 
 [package.metadata.bootimage]
-run-args = ["-serial", "stdio", "-display", "none"]
+run-args = []
 
 [profile.dev]
 panic = "abort"
