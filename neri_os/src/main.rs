@@ -32,7 +32,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         .expect("Fallo la inicializacion del heap");
 
     unsafe {
-        vga_graphics::set_physical_memory_offset(boot_info.physical_memory_offset);
         vga_graphics::init_mode_13h();
     }
 

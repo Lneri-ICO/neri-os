@@ -36,14 +36,11 @@ const MODE_13H_REGS: [u8; 61] = [
     0x41, 0x00, 0x0F, 0x00, 0x00,
 ];
 
-static mut FRAMEBUFFER_ADDR: usize = 0xA0000;
-
-/// Debe llamarse una vez al inicio, pasando el offset de memoria fisica
-/// que usa el bootloader (necesario porque la memoria fisica esta
-/// mapeada a partir de ese offset en la tabla de paginas del kernel).
-pub unsafe fn set_physical_memory_offset(offset: u64) {
-    FRAMEBUFFER_ADDR = offset as usize + 0xA0000;
-}
+// El framebuffer de modo 13h vive en 0xA0000, dentro del primer MB de
+// memoria fisica, que el bootloader ya deja identity-mapped -- igual
+// que el buffer de texto en 0xb8000 que usamos antes. No hace falta
+// sumar ningun offset de memoria fisica aqui.
+const FRAMEBUFFER_ADDR: usize = 0xA0000;
 
 pub unsafe fn init_mode_13h() {
     let mut misc_port: Port<u8> = Port::new(0x3C2);
