@@ -4,12 +4,12 @@
 
 extern crate alloc;
 
-mod vga_buffer;
+mod vga_graphics;
+mod mouse;
 mod gdt;
 mod interrupts;
 mod memory;
 mod allocator;
-mod shell;
 
 use core::panic::PanicInfo;
 use bootloader::{BootInfo, entry_point};
@@ -18,13 +18,9 @@ use x86_64::VirtAddr;
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    vga_buffer::WRITER.lock().clear_screen();
-    println!("Iniciando NeriOS...");
-
     gdt::init();
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
-    x86_64::instructions::interrupts::enable();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
@@ -35,8 +31,18 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("Fallo la inicializacion del heap");
 
-    println!("NeriOS listo. Memoria dinamica activa.");
-    shell::init();
+    unsafe {
+        vga_graphics::set_physical_memory_offset(boot_info.physical_memory_offset);
+        vga_graphics::init_mode_13h();
+    }
+
+    vga_graphics::draw_desktop();
+
+    unsafe {
+        mouse::init();
+    }
+
+    x86_64::instructions::interrupts::enable();
 
     loop {
         x86_64::instructions::hlt();
@@ -44,8 +50,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 }
 
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
+fn panic(_info: &PanicInfo) -> ! {
+    vga_graphics::fill_screen(vga_graphics::COLOR_RED);
     loop {
         x86_64::instructions::hlt();
     }
