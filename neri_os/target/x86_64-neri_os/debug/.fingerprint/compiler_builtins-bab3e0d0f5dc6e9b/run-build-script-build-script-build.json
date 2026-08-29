@@ -1,0 +1,1 @@
+{"rustc":1317606298140335667,"features":"","target":0,"profile":0,"path":0,"deps":[[7964265635635134329,"build_script_build",false,711838536739991243]],"local":[{"RerunIfChanged":{"output":"x86_64-neri_os/debug/build/compiler_builtins-bab3e0d0f5dc6e9b/output","paths":["build.rs"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}

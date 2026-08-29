@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bootloader = { version = "0.9.23", features = ["map_physical_memory"] }
+bootloader = { version = "=0.9.23", features = ["map_physical_memory"] }
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
-x86_64 = "0.14.2"
+x86_64 = "=0.14.10"
 spin = "0.5.2"
-uart_16550 = "0.2.0"
-pic8259 = "0.10.1"
+uart_16550 = "=0.2.18"
+pic8259 = "=0.10.1"
 
 [package.metadata.bootimage]
 run-args = ["-serial", "stdio", "-display", "none"]
